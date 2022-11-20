@@ -1,11 +1,14 @@
 ﻿using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace inlämning
@@ -134,17 +137,16 @@ namespace inlämning
         {
 
             var connectionString = GetConnectionString();
-
             MySqlConnection conn = new MySqlConnection(connectionString);
             conn.Open();
 
 
-            MySqlCommand cmd = new MySqlCommand("SELECT COUNT(country), country FROM aesqlassignment1 WHERE country = (SELECT MAX(country) FROM aesqlassignment1)", conn);
+            MySqlCommand cmd = new MySqlCommand("SELECT country, COUNT(*) FROM aesqlassignment1 Group By country Order By COUNT(*) DESC LIMIT 1", conn);
             MySqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read())    // för rada upp listan
             {
-                Console.WriteLine("Most common country is : " + reader.GetString("country") + ", which occurs " + reader.GetInt32("COUNT(country)") + " times.");
+                Console.WriteLine("The most common country is: " + reader.GetString("country"));
 
             }
 
